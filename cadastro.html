@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cadastro — EconomizaPinhal</title>
+<meta name="description" content="Crie sua conta no EconomizaPinhal"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;900&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.cadastro-container{max-width:500px;margin:40px auto;background:var(--bg2);border-radius:16px;border:1px solid #2a2a2a;padding:40px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.cadastro-header{text-align:center;margin-bottom:32px;}
+.cadastro-logo{font-family:var(--font-cond);font-size:28px;font-weight:900;margin-bottom:12px;}
+.cadastro-logo span{color:var(--red);}
+.cadastro-subtitle{font-size:14px;color:var(--txt3);margin-bottom:28px;}
+.cadastro-tabs{display:flex;gap:0;border-bottom:1px solid #2a2a2a;margin-bottom:28px;}
+.cadastro-tab{flex:1;padding:14px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;color:var(--txt3);border-bottom:2px solid transparent;transition:all .2s;text-transform:uppercase;letter-spacing:0.5px;}
+.cadastro-tab.active{color:var(--red);border-bottom-color:var(--red);}
+.cadastro-form{display:flex;flex-direction:column;gap:16px;}
+.form-group{display:flex;flex-direction:column;gap:8px;}
+.form-label{font-size:12px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:0.5px;}
+.form-input{background:var(--bg3);border:1px solid #2a2a2a;border-radius:8px;padding:12px 14px;color:#fff;font-size:14px;font-family:var(--font);outline:none;transition:border-color .2s;}
+.form-input:focus{border-color:var(--red-border);}
+.form-input::placeholder{color:#555;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-full{grid-column:1/-1;}
+.password-strength{display:flex;gap:4px;margin-top:6px;}
+.strength-bar{flex:1;height:4px;background:#333;border-radius:99px;transition:all .2s;}
+.strength-bar.weak{background:#ff6b6b;}
+.strength-bar.medium{background:#ffa94d;}
+.strength-bar.strong{background:#22c55e;}
+.strength-text{font-size:10px;margin-top:4px;font-weight:600;}
+.strength-text.weak{color:#ff6b6b;}
+.strength-text.medium{color:#ffa94d;}
+.strength-text.strong{color:#22c55e;}
+.checkbox-group{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;}
+.checkbox-group input[type=checkbox]{margin-top:3px;accent-color:var(--red);cursor:pointer;}
+.checkbox-group label{font-size:12px;color:var(--txt3);line-height:1.5;cursor:pointer;}
+.checkbox-group a{color:var(--red);}
+.error-msg{background:#c72b2222;border:1px solid #c72b2255;color:#ff6b6b;padding:10px 12px;border-radius:8px;font-size:12px;margin-bottom:12px;display:none;}
+.error-msg.show{display:block;}
+.success-box{background:var(--green-bg);border:1px solid #22c55e44;border-radius:12px;padding:32px;text-align:center;display:none;}
+.success-box.show{display:block;}
+.success-icon{font-size:48px;margin-bottom:12px;}
+.success-title{font-family:var(--font-cond);font-size:26px;font-weight:900;color:var(--green);margin-bottom:8px;}
+.success-desc{font-size:14px;color:#4a7c4a;line-height:1.7;margin-bottom:20px;}
+.btn-submit{background:var(--red);color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s;width:100%;}
+.btn-submit:hover{background:var(--red-dark);transform:translateY(-2px);}
+.btn-submit:disabled{background:#666;cursor:not-allowed;transform:none;}
+.login-link{text-align:center;font-size:13px;color:var(--txt3);margin-top:20px;}
+.login-link a{color:var(--red);cursor:pointer;font-weight:600;transition:color .2s;}
+.login-link a:hover{color:#ff5a4a;}
+.back-link{text-align:center;margin-top:16px;}
+.back-link a{font-size:12px;color:var(--txt3);cursor:pointer;transition:color .2s;}
+.back-link a:hover{color:var(--txt);}
+.gratis-badge{display:inline-block;background:var(--green-bg);border:1px solid #22c55e44;color:var(--green);font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px;margin-bottom:16px;text-align:center;width:100%;}
+@media(max-width:600px){
+  .cadastro-container{margin:40px 16px;padding:24px;}
+  .cadastro-logo{font-size:24px;}
+  .form-row{grid-template-columns:1fr;}
+  .cadastro-tabs{margin-bottom:20px;}
+}
+</style>
+<script src="api-usuarios.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="window.location.href='login.html'">Economiza<span>Pinhal</span></div>
+  <div class="nav-links">
+    <a onclick="window.location.href='login.html'">Voltar</a>
+  </div>
+  <button class="btn-nav" onclick="window.location.href='login.html'">← Login</button>
+</nav>
+
+<div class="cadastro-container">
+  <div class="cadastro-header">
+    <div class="cadastro-logo">Economiza<span>Pinhal</span></div>
+    <div class="cadastro-subtitle">Crie sua conta grátis</div>
+  </div>
+
+  <div class="cadastro-tabs">
+    <div class="cadastro-tab active" onclick="trocarTipo('consumidor')">👤Sou Consumidor</div>
+    <div class="cadastro-tab" onclick="trocarTipo('loja')">🏪 Sou Dono de Loja</div>
+  </div>
+
+  <div id="error-msg" class="error-msg"></div>
+
+  <!-- CADASTRO CONSUMIDOR -->
+  <div id="form-consumidor" class="cadastro-form">
+    <div class="gratis-badge">✓ 100% gratuito · sem cartão · sem burocracia</div>
+
+    <div class="form-group">
+      <label class="form-label">Nome completo *</label>
+      <input class="form-input" type="text" id="cons-nome" placeholder="Seu nome" required/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">E-mail *</label>
+      <input class="form-input" type="email" id="cons-email" placeholder="seu@email.com" required/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Telefone (opcional)</label>
+      <input class="form-input" type="tel" id="cons-tel" placeholder="(19) 9 9999-9999"/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Senha *</label>
+      <input class="form-input" type="password" id="cons-senha" placeholder="Mín. 8 caracteres" onkeyup="verificarForca(this.value)"/>
+      <div class="password-strength">
+        <div class="strength-bar" id="strength-bar-1"></div>
+        <div class="strength-bar" id="strength-bar-2"></div>
+        <div class="strength-bar" id="strength-bar-3"></div>
+      </div>
+      <div class="strength-text" id="strength-text">Fraca</div>
+      <small style="color:#666;margin-top:4px">Deve conter: maiúscula, número e caractere especial (!@#$%^&*)</small>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Confirmar senha *</label>
+      <input class="form-input" type="password" id="cons-senha2" placeholder="Repita a senha"/>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="cons-termos" required/>
+      <label for="cons-termos">Aceito os <a href="#">termos de uso</a> e a <a href="#">política de privacidade</a>.</label>
+    </div>
+
+    <button class="btn-submit" onclick="cadastrarConsumidor()">Criar minha conta →</button>
+
+    <div class="success-box" id="success-consumidor">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Bem-vindo!</div>
+      <div class="success-desc">
+        Sua conta foi criada com sucesso!<br/>
+        Você será redirecionado em breve...
+      </div>
+    </div>
+  </div>
+
+  <!-- CADASTRO LOJA -->
+  <div id="form-loja" class="cadastro-form" style="display:none">
+    <div class="gratis-badge">✓ 100% gratuito · sem cartão · sem burocracia</div>
+
+    <div class="form-group">
+      <label class="form-label">Nome da loja *</label>
+      <input class="form-input" type="text" id="loja-nome" placeholder="Ex: Mercadão do João" required/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tipo de estabelecimento *</label>
+      <select class="form-input" id="loja-tipo" required>
+        <option value="">Selecione...</option>
+        <option>Supermercado</option>
+        <option>Mercadinho</option>
+        <option>Açougue</option>
+        <option>Farmácia</option>
+        <option>Padaria</option>
+        <option>Hortifrúti</option>
+        <option>Loja de bebidas</option>
+        <option>Pet shop</option>
+        <option>Outro comércio</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Endereço completo *</label>
+      <input class="form-input" type="text" id="loja-end" placeholder="Rua, número e bairro" required/>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">E-mail *</label>
+        <input class="form-input" type="email" id="loja-email" placeholder="seu@email.com" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">WhatsApp</label>
+        <input class="form-input" type="tel" id="loja-tel" placeholder="(19) 9 9999-9999"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Senha *</label>
+        <input class="form-input" type="password" id="loja-senha" placeholder="Mín. 8 caracteres" onkeyup="verificarForca2(this.value)"/>
+        <div class="password-strength">
+          <div class="strength-bar" id="strength-bar2-1"></div>
+          <div class="strength-bar" id="strength-bar2-2"></div>
+          <div class="strength-bar" id="strength-bar2-3"></div>
+        </div>
+        <div class="strength-text" id="strength-text2">Fraca</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmar senha *</label>
+        <input class="form-input" type="password" id="loja-senha2" placeholder="Repita a senha"/>
+      </div>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="loja-termos" required/>
+      <label for="loja-termos">Aceito os <a href="#">termos de uso</a> e a <a href="#">política de privacidade</a>.</label>
+    </div>
+
+    <button class="btn-submit" onclick="cadastrarLoja()">Cadastrar minha loja →</button>
+
+    <div class="success-box" id="success-loja">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Loja cadastrada!</div>
+      <div class="success-desc">
+        Bem-vindo ao EconomizaPinhal!<br/>
+        Sua loja já está visível para os compradores.<br/>
+        Você será redirecionado em breve...
+      </div>
+    </div>
+  </div>
+
+  <div class="login-link">
+    Já tem conta? <a onclick="window.location.href='login.html'">Faça login</a>
+  </div>
+
+  <div class="back-link">
+    <a onclick="window.location.href='login.html'">← Voltar</a>
+  </div>
+</div>
+
+<script>
+function trocarTipo(tipo){
+  document.querySelectorAll('.cadastro-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  document.getElementById('form-consumidor').style.display=tipo==='consumidor'?'flex':'none';
+  document.getElementById('form-loja').style.display=tipo==='loja'?'flex':'none';
+}
+
+function verificarForca(senha){
+  let forca=0;
+  const bars=document.querySelectorAll('#form-consumidor .strength-bar');
+  const texto=document.getElementById('strength-text');
+  
+  if(senha.length>=8)forca++;
+  if(/[A-Z]/.test(senha))forca++;
+  if(/[0-9]/.test(senha)&&/[!@#$%^&*]/.test(senha))forca++;
+  
+  bars.forEach(b=>b.className='strength-bar');
+  for(let i=0;i<forca;i++){
+    if(forca===1)bars[i].classList.add('weak');
+    else if(forca===2)bars[i].classList.add('medium');
+    else bars[i].classList.add('strong');
+  }
+  
+  if(forca===1){texto.textContent='Fraca';texto.className='strength-text weak';}
+  else if(forca===2){texto.textContent='Média';texto.className='strength-text medium';}
+  else if(forca===3){texto.textContent='Forte';texto.className='strength-text strong';}
+  else{texto.textContent='Muito fraca';texto.className='strength-text weak';}
+}
+
+function verificarForca2(senha){
+  let forca=0;
+  const bars=document.querySelectorAll('#form-loja .strength-bar');
+  const texto=document.getElementById('strength-text2');
+  
+  if(senha.length>=8)forca++;
+  if(/[A-Z]/.test(senha))forca++;
+  if(/[0-9]/.test(senha)&&/[!@#$%^&*]/.test(senha))forca++;
+  
+  bars.forEach(b=>b.className='strength-bar');
+  for(let i=0;i<forca;i++){
+    if(forca===1)bars[i].classList.add('weak');
+    else if(forca===2)bars[i].classList.add('medium');
+    else bars[i].classList.add('strong');
+  }
+  
+  if(forca===1){texto.textContent='Fraca';texto.className='strength-text weak';}
+  else if(forca===2){texto.textContent='Média';texto.className='strength-text medium';}
+  else if(forca===3){texto.textContent='Forte';texto.className='strength-text strong';}
+  else{texto.textContent='Muito fraca';texto.className='strength-text weak';}
+}
+
+function validarEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+}
+
+function validarTelefone(tel){
+  if(!tel)return true;
+  return /^\d{11}$/.test(tel.replace(/\D/g,''));
+}
+
+function validarSenha(senha){
+  if(senha.length<8)return false;
+  if(!/[A-Z]/.test(senha))return false;
+  if(!/[0-9]/.test(senha))return false;
+  if(!/[!@#$%^&*]/.test(senha))return false;
+  return true;
+}
+
+function mostrarErro(msg){
+  const errorMsg=document.getElementById('error-msg');
+  errorMsg.textContent='✗ '+msg;
+  errorMsg.classList.add('show');
+  setTimeout(()=>errorMsg.classList.remove('show'),4000);
+}
+
+function cadastrarConsumidor(){
+  const nome=document.getElementById('cons-nome').value.trim();
+  const email=document.getElementById('cons-email').value.trim();
+  const tel=document.getElementById('cons-tel').value.trim();
+  const senha=document.getElementById('cons-senha').value;
+  const senha2=document.getElementById('cons-senha2').value;
+  const termos=document.getElementById('cons-termos').checked;
+  
+  if(!nome||nome.length<3){mostrarErro('Nome deve ter pelo menos 3 caracteres.');return;}
+  if(!email||!validarEmail(email)){mostrarErro('E-mail inválido.');return;}
+  if(tel&&!validarTelefone(tel)){mostrarErro('Telefone inválido (11 dígitos).');return;}
+  if(!senha||!validarSenha(senha)){mostrarErro('Senha fraca! Use maiúscula, número e caractere especial.');return;}
+  if(senha!==senha2){mostrarErro('As senhas não conferem.');return;}
+  if(!termos){mostrarErro('Aceite os termos de uso.');return;}
+  
+  // Usar gerenciador de usuários
+  const resultado=gerenciadorUsuarios.criarUsuario({
+    email,
+    nome,
+    tipo:'consumidor',
+    telefone:tel,
+    senha:'hash_'+senha
+  });
+  
+  if(!resultado.sucesso){
+    mostrarErro(resultado.erro);
+    return;
+  }
+  
+  document.getElementById('form-consumidor').style.display='none';
+  document.getElementById('success-consumidor').classList.add('show');
+  
+  setTimeout(()=>{
+    localStorage.setItem('usuarioLogado',JSON.stringify({email,nome,tipo:'consumidor'}));
+    window.location.href='index.html';
+  },2000);
+}
+
+function cadastrarLoja(){
+  const nome=document.getElementById('loja-nome').value.trim();
+  const tipo=document.getElementById('loja-tipo').value.trim();
+  const end=document.getElementById('loja-end').value.trim();
+  const email=document.getElementById('loja-email').value.trim();
+  const tel=document.getElementById('loja-tel').value.trim();
+  const senha=document.getElementById('loja-senha').value;
+  const senha2=document.getElementById('loja-senha2').value;
+  const termos=document.getElementById('loja-termos').checked;
+  
+  if(!nome||nome.length<3){mostrarErro('Nome da loja deve ter pelo menos 3 caracteres.');return;}
+  if(!tipo){mostrarErro('Selecione um tipo de estabelecimento.');return;}
+  if(!end||end.length<10){mostrarErro('Endereço completo é obrigatório.');return;}
+  if(!email||!validarEmail(email)){mostrarErro('E-mail inválido.');return;}
+  if(tel&&!validarTelefone(tel)){mostrarErro('Telefone inválido (11 dígitos).');return;}
+  if(!senha||!validarSenha(senha)){mostrarErro('Senha fraca! Use maiúscula, número e caractere especial.');return;}
+  if(senha!==senha2){mostrarErro('As senhas não conferem.');return;}
+  if(!termos){mostrarErro('Aceite os termos de uso.');return;}
+  
+  // Usar gerenciador de usuários
+  const resultado=gerenciadorUsuarios.criarUsuario({
+    email,
+    nome,
+    tipo:'loja',
+    telefone:tel,
+    endereco:end,
+    tipoEstabelecimento:tipo,
+    senha:'hash_'+senha
+  });
+  
+  if(!resultado.sucesso){
+    mostrarErro(resultado.erro);
+    return;
+  }
+  
+  document.getElementById('form-loja').style.display='none';
+  document.getElementById('success-loja').classList.add('show');
+  
+  setTimeout(()=>{
+    localStorage.setItem('usuarioLogado',JSON.stringify({email,nome,tipo:'loja'}));
+    window.location.href='index.html';
+  },2000);
+}
+</script>
+
+</body>
+</html>

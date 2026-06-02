@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Login — EconomizaPinhal</title>
+<meta name="description" content="Acesse sua conta no EconomizaPinhal"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;900&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.login-container{max-width:420px;margin:60px auto;background:var(--bg2);border-radius:16px;border:1px solid #2a2a2a;padding:40px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.login-header{text-align:center;margin-bottom:32px;}
+.login-logo{font-family:var(--font-cond);font-size:28px;font-weight:900;margin-bottom:12px;}
+.login-logo span{color:var(--red);}
+.login-subtitle{font-size:14px;color:var(--txt3);margin-bottom:28px;}
+.login-form{display:flex;flex-direction:column;gap:16px;}
+.form-group{display:flex;flex-direction:column;gap:8px;}
+.form-label{font-size:12px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:0.5px;}
+.form-input{background:var(--bg3);border:1px solid #2a2a2a;border-radius:8px;padding:12px 14px;color:#fff;font-size:14px;font-family:var(--font);outline:none;transition:border-color .2s;}
+.form-input:focus{border-color:var(--red-border);}
+.form-input::placeholder{color:#555;}
+.remember-forgot{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-top:8px;}
+.remember-forgot input[type=checkbox]{accent-color:var(--red);cursor:pointer;}
+.remember-forgot label{cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--txt3);transition:color .2s;}
+.remember-forgot label:hover{color:var(--txt);}
+.forgot-link{color:var(--red);cursor:pointer;transition:color .2s;}
+.forgot-link:hover{color:#ff5a4a;}
+.btn-login{background:var(--red);color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s;margin-top:12px;}
+.btn-login:hover{background:var(--red-dark);transform:translateY(-2px);}
+.login-divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--txt3);font-size:12px;}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:#2a2a2a;}
+.signup-link{text-align:center;font-size:13px;color:var(--txt3);}
+.signup-link a{color:var(--red);cursor:pointer;font-weight:600;transition:color .2s;}
+.signup-link a:hover{color:#ff5a4a;}
+.error-msg{background:#c72b2222;border:1px solid #c72b2255;color:#ff6b6b;padding:10px 12px;border-radius:8px;font-size:12px;margin-bottom:12px;display:none;}
+.error-msg.show{display:block;}
+.success-msg{background:var(--green-bg);border:1px solid #22c55e44;color:var(--green);padding:10px 12px;border-radius:8px;font-size:12px;margin-bottom:12px;display:none;}
+.success-msg.show{display:block;}
+.back-home{text-align:center;margin-top:20px;}
+.back-home a{font-size:12px;color:var(--txt3);cursor:pointer;transition:color .2s;}
+.back-home a:hover{color:var(--txt);}
+@media(max-width:600px){
+  .login-container{margin:40px 16px;padding:24px;}
+  .login-logo{font-size:24px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="window.location.href='index.html'">Economiza<span>Pinhal</span></div>
+  <div class="nav-links">
+    <a onclick="window.location.href='index.html'">Início</a>
+  </div>
+  <button class="btn-nav" onclick="window.location.href='index.html'">← Voltar</button>
+</nav>
+
+<div class="login-container">
+  <div class="login-header">
+    <div class="login-logo">Economiza<span>Pinhal</span></div>
+    <div class="login-subtitle">Acesse sua conta</div>
+  </div>
+
+  <div class="error-msg" id="error-msg"></div>
+  <div class="success-msg" id="success-msg"></div>
+
+  <form class="login-form" onsubmit="fazerLogin(event)">
+    <div class="form-group">
+      <label class="form-label">E-mail</label>
+      <input class="form-input" type="email" id="login-email" placeholder="seu@email.com" required/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Senha</label>
+      <input class="form-input" type="password" id="login-senha" placeholder="Sua senha" required/>
+    </div>
+
+    <div class="remember-forgot">
+      <label>
+        <input type="checkbox" id="login-remember"/>
+        Lembrar-me
+      </label>
+      <span class="forgot-link" onclick="recuperarSenha()">Esqueci minha senha</span>
+    </div>
+
+    <button type="submit" class="btn-login">Entrar na minha conta →</button>
+  </form>
+
+  <div class="login-divider">ou</div>
+
+  <div class="signup-link">
+    Não tem conta? <a onclick="window.location.href='cadastro.html'">Cadastre-se grátis</a>
+  </div>
+
+  <div class="back-home">
+    <a onclick="window.location.href='index.html'">← Voltar para o site</a>
+  </div>
+</div>
+
+<script>
+// Simular banco de dados de usuários (em produção, seria um servidor)
+const usuariosRegistrados={
+  'usuario@email.com':{senha:'Senha123!',nome:'Usuário Teste',tipo:'consumidor'},
+  'loja@email.com':{senha:'Loja123!',nome:'Loja Teste',tipo:'loja'}
+};
+
+function cadastroNovoUsuario(email,nome,tipo){
+  usuariosRegistrados[email]={senha:'TempSenha123!',nome:nome,tipo:tipo};
+  localStorage.setItem('usuarioLogado',JSON.stringify({email,nome,tipo}));
+  window.location.href='index.html';
+}
+
+function fazerLogin(e){
+  e.preventDefault();
+  
+  const email=document.getElementById('login-email').value.trim();
+  const senha=document.getElementById('login-senha').value;
+  const remember=document.getElementById('login-remember').checked;
+  const errorMsg=document.getElementById('error-msg');
+  const successMsg=document.getElementById('success-msg');
+  
+  errorMsg.classList.remove('show');
+  successMsg.classList.remove('show');
+  
+  if(!email||!senha){
+    mostrarErro('Preencha todos os campos.');
+    return;
+  }
+  
+  const usuario=usuariosRegistrados[email];
+  if(!usuario){
+    mostrarErro('E-mail não encontrado em nosso sistema.');
+    return;
+  }
+  
+  if(usuario.senha!==senha){
+    mostrarErro('Senha incorreta. Tente novamente.');
+    return;
+  }
+  
+  if(remember){
+    localStorage.setItem('usuarioLogado',JSON.stringify({email,nome:usuario.nome,tipo:usuario.tipo}));
+  }else{
+    sessionStorage.setItem('usuarioLogado',JSON.stringify({email,nome:usuario.nome,tipo:usuario.tipo}));
+  }
+  
+  successMsg.textContent='✓ Login realizado com sucesso! Redirecionando...';
+  successMsg.classList.add('show');
+  
+  setTimeout(()=>{
+    window.location.href='index.html';
+  },1500);
+}
+
+function mostrarErro(msg){
+  const errorMsg=document.getElementById('error-msg');
+  errorMsg.textContent='✗ '+msg;
+  errorMsg.classList.add('show');
+}
+
+function recuperarSenha(){
+  const email=document.getElementById('login-email').value.trim();
+  if(!email){
+    alert('Digite seu e-mail para recuperar a senha.');
+    return;
+  }
+  const successMsg=document.getElementById('success-msg');
+  successMsg.textContent='✓ Um e-mail de recuperação foi enviado para '+email;
+  successMsg.classList.add('show');
+  setTimeout(()=>successMsg.classList.remove('show'),4000);
+}
+
+// Verificar se já está logado
+window.addEventListener('load',()=>{
+  const usuarioLogado=localStorage.getItem('usuarioLogado')||sessionStorage.getItem('usuarioLogado');
+  if(usuarioLogado){
+    window.location.href='index.html';
+  }
+});
+</script>
+
+</body>
+</html>

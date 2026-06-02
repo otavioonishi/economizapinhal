@@ -1,0 +1,521 @@
+cat > /mnt/user-data/outputs/index.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EconomizaPinhal — Compare preços em Pinhal em tempo real</title>
+<meta name="description" content="Descubra onde os produtos estão mais baratos nos mercados de Pinhal. Compare preços em tempo real e economize todo dia."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;900&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<script>
+// Verificar autenticação ANTES de carregar o site
+window.addEventListener('load',()=>{
+  const usuarioLogado=localStorage.getItem('usuarioLogado')||sessionStorage.getItem('usuarioLogado');
+  if(!usuarioLogado){
+    window.location.href='login.html';
+    return;
+  }
+});
+</script>
+
+<nav>
+  <div class="logo" onclick="showPage('home')">Economiza<span>Pinhal</span></div>
+  <div class="nav-links">
+    <a onclick="showPage('home')">Início</a>
+    <a onclick="showPage('busca')">Buscar preços</a>
+    <a onclick="showPage('lista')">Lista de compras</a>
+    <a onclick="showPage('cadastro')">Cadastrar</a>
+  </div>
+  <button class="btn-nav" onclick="fazerLogout()">Sair</button>
+</nav>
+
+<!-- HOME -->
+<div id="pg-home">
+  <div class="hero">
+    <div class="hero-badge"><div class="dot"></div>AO VIVO EM PINHAL &nbsp;·&nbsp; <span id="badge-count">843</span> ATUALIZAÇÕES HOJE</div>
+    <h1>Compare preços em<br><span>Pinhal</span> antes<br>de comprar.</h1>
+    <p>Veja onde cada produto está mais barato nos mercados da cidade e economize dinheiro todo dia.</p>
+    <div class="hero-btns">
+      <button class="btn-prim" onclick="showPage('busca')">🔍 Buscar produtos</button>
+      <button class="btn-sec" onclick="showPage('cadastro')">Cadastrar minha loja</button>
+    </div>
+    <div class="mockup">
+      <div class="mock-head">
+        <span class="mock-title">Arroz Tio João 5kg — Pinhal</span>
+        <span class="live-pill"><div class="dot"></div>AO VIVO</span>
+      </div>
+      <div class="prow top">
+        <div><div class="mk">🏪 Mercadão Pinhal <span class="top-label">MENOR</span></div><div class="mt">Atualizado 5 min atrás</div></div>
+        <div style="text-align:right"><div class="pv red">R$18,90</div><div class="conf">✓ 97% confiança</div></div>
+      </div>
+      <div class="prow">
+        <div><div class="mk">🏬 Supermercado Vitalino</div><div class="mt">12 min atrás</div></div>
+        <div style="text-align:right"><div class="pv">R$21,50</div><div class="conf" style="color:#555">✓ 88%</div></div>
+      </div>
+      <div class="prow">
+        <div><div class="mk">🛒 Atacadão do Bairro</div><div class="mt">30 min atrás</div></div>
+        <div style="text-align:right"><div class="pv">R$22,90</div><div class="conf" style="color:#555">✓ 81%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statsbar">
+    <div class="stat"><div class="sn"><b id="c1">0</b>+</div><div class="sl">Produtos rastreados</div></div>
+    <div class="stat"><div class="sn"><b id="c2">0</b></div><div class="sl">Lojas cadastradas</div></div>
+    <div class="stat"><div class="sn">R$<b id="c3">0</b></div><div class="sl">Economizados hoje</div></div>
+    <div class="stat"><div class="sn"><b id="c4">0</b></div><div class="sl">Pinheirenses ativos</div></div>
+  </div>
+
+  <div class="section">
+    <div class="slabel">Como funciona</div>
+    <div class="stitle">Simples pra quem compra,<br>ótimo pra quem vende</div>
+    <div class="ssub">Lojas cadastram preços, moradores encontram as melhores ofertas. Todo mundo ganha.</div>
+    <div class="how-grid">
+      <div class="how-card"><div class="how-num">01</div><div class="how-title">Lojas se cadastram</div><div class="how-desc">Mercados, açougues, farmácias e qualquer comércio de Pinhal. Gratuito e rápido.</div></div>
+      <div class="how-card"><div class="how-num">02</div><div class="how-title">Publicam os preços</div><div class="how-desc">Via painel próprio ou foto da nota fiscal. A IA valida tudo automaticamente.</div></div>
+      <div class="how-card"><div class="how-num">03</div><div class="how-title">Moradores buscam</div><div class="how-desc">Pesquisam qualquer produto e veem onde está mais barato agora, neste momento.</div></div>
+      <div class="how-card"><div class="how-num">04</div><div class="how-title">Economizam de verdade</div><div class="how-desc">A lista de compras calcula em quais lojas você gasta menos na semana.</div></div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <div class="section" style="text-align:center">
+    <div class="stitle">Tem uma loja em Pinhal?</div>
+    <div class="ssub" style="max-width:420px;margin:0 auto 28px">Cadastre-se grátis em menos de 1 minuto e apareça para centenas de consumidores da cidade.</div>
+    <button class="btn-prim" onclick="showPage('cadastro')">Cadastrar minha loja agora →</button>
+  </div>
+</div>
+
+<!-- BUSCA -->
+<div id="pg-busca" style="display:none">
+  <div class="section">
+    <div class="slabel">Busca de Preços</div>
+    <div class="stitle">Onde está mais barato<br>em Pinhal agora?</div>
+    <div class="ssub">Compare preços nos mercados e lojas cadastradas na cidade.</div>
+    <div class="search-bar">
+      <input id="search-input" type="text" placeholder="Ex: Coca-Cola 2L, arroz, frango..." value="Arroz 5kg"/>
+      <button onclick="doSearch()">Buscar</button>
+    </div>
+    <div class="tags">
+      <span class="tag on" onclick="stag(this,'Arroz 5kg')">Arroz 5kg</span>
+      <span class="tag" onclick="stag(this,'Coca-Cola 2L')">Coca-Cola 2L</span>
+      <span class="tag" onclick="stag(this,'Leite 1L')">Leite 1L</span>
+      <span class="tag" onclick="stag(this,'Frango 1kg')">Frango 1kg</span>
+      <span class="tag" onclick="stag(this,'Café 500g')">Café 500g</span>
+      <span class="tag" onclick="stag(this,'Feijão 1kg')">Feijão 1kg</span>
+    </div>
+    <div class="rgrid" id="results"></div>
+  </div>
+</div>
+
+<!-- LISTA -->
+<div id="pg-lista" style="display:none">
+  <div class="section">
+    <div class="slabel">Lista de Compras Inteligente</div>
+    <div class="stitle">Monte sua lista,<br>nós calculamos a economia</div>
+    <div class="ssub">Adicione os produtos e veja onde você gasta menos comprando na combinação certa de lojas.</div>
+    <div class="list-box">
+      <div class="list-input-row">
+        <input id="list-input" type="text" placeholder="Digite um produto... (ex: arroz, leite, café)" onkeydown="if(event.key==='Enter')addItem()"/>
+        <button onclick="addItem()">+ Adicionar</button>
+      </div>
+      <div class="list-items" id="list-items"></div>
+      <div class="savings-box" id="savings-box" style="display:none">
+        <div>
+          <div class="sav-label">💰 Você economiza</div>
+          <div class="sav-amount" id="sav-amount">R$0</div>
+          <div class="sav-desc" id="sav-desc">comprando na combinação ideal de lojas</div>
+        </div>
+        <button class="btn-prim">Ver rota de compras →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CADASTRO SIMPLIFICADO -->
+<div id="pg-cadastro" style="display:none">
+  <div class="section">
+    <div class="slabel">Conta</div>
+    <div class="stitle" style="text-align:center">Crie sua conta<br>ou cadastre sua loja</div>
+    <div class="ssub" style="text-align:center;max-width:400px;margin:0 auto 28px">Escolha uma opção para começar.</div>
+
+    <div class="cad-box">
+      <div class="cad-tabs">
+        <div class="ctab on" id="tab-usuario" onclick="switchCad('usuario')">👤 Sou consumidor</div>
+        <div class="ctab" id="tab-loja" onclick="switchCad('loja')">🏪 Cadastrar minha loja</div>
+        <div class="ctab" id="tab-login" onclick="switchCad('login')">🔑 Já tenho conta</div>
+      </div>
+
+      <!-- CADASTRO USUÁRIO COMUM -->
+      <div id="cad-usuario" class="cad-body">
+        <div class="gratis-badge">✓ 100% gratuito · sem cartão · sem burocracia</div>
+
+        <div id="form-usuario">
+          <div class="fgroup">
+            <div class="flabel">Nome completo *</div>
+            <input class="finput" placeholder="Seu nome" id="us-nome"/>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">E-mail *</div>
+            <input class="finput" type="email" placeholder="seu@email.com" id="us-email"/>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Telefone (opcional)</div>
+            <input class="finput" placeholder="(19) 9 9999-9999" id="us-tel"/>
+          </div>
+          <div class="frow2">
+            <div class="fgroup">
+              <div class="flabel">Senha *</div>
+              <input class="finput" type="password" placeholder="Mín. 8 chars, maiúscula, número e caractere especial" id="us-senha"/>
+            </div>
+            <div class="fgroup">
+              <div class="flabel">Confirmar senha *</div>
+              <input class="finput" type="password" placeholder="Repita a senha" id="us-senha2"/>
+            </div>
+          </div>
+          <div class="fcheck">
+            <input type="checkbox" id="us-termos"/>
+            <span>Aceito os <a href="#">termos de uso</a> e a <a href="#">política de privacidade</a>.</span>
+          </div>
+          <button class="btn-submit" onclick="cadastrarUsuario()">Criar minha conta grátis →</button>
+        </div>
+
+        <div class="success-box" id="usuario-success">
+          <div class="suc-icon">🎉</div>
+          <div class="suc-title">Conta criada!</div>
+          <div class="suc-desc">
+            Bem-vindo ao EconomizaPinhal!<br/>
+            Sua conta está ativa e pronta para usar.<br/><br/>
+            Você receberá um e-mail de confirmação em breve.
+          </div>
+          <br/>
+          <button class="btn-prim" onclick="showPage('home')" style="margin-top:8px">Começar a buscar →</button>
+        </div>
+      </div>
+
+      <!-- CADASTRO LOJA -->
+      <div id="cad-loja" class="cad-body" style="display:none">
+        <div class="gratis-badge">✓ 100% gratuito · sem cartão · sem burocracia</div>
+
+        <div id="form-loja">
+          <div class="fgroup">
+            <div class="flabel">Nome da loja *</div>
+            <input class="finput" placeholder="Ex: Mercadão do João, Padaria da Ana..." id="lj-nome"/>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Tipo de estabelecimento *</div>
+            <select class="finput" id="lj-tipo">
+              <option value="">Selecione o tipo...</option>
+              <option>Supermercado</option>
+              <option>Mercadinho</option>
+              <option>Açougue</option>
+              <option>Farmácia</option>
+              <option>Padaria</option>
+              <option>Hortifrúti</option>
+              <option>Loja de bebidas</option>
+              <option>Pet shop</option>
+              <option>Outro comércio</option>
+            </select>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Endereço completo *</div>
+            <input class="finput" placeholder="Rua, número e bairro em Pinhal" id="lj-end"/>
+          </div>
+          <div class="frow2">
+            <div class="fgroup">
+              <div class="flabel">E-mail *</div>
+              <input class="finput" type="email" placeholder="seu@email.com" id="lj-email"/>
+            </div>
+            <div class="fgroup">
+              <div class="flabel">WhatsApp</div>
+              <input class="finput" placeholder="(19) 9 9999-9999" id="lj-tel"/>
+            </div>
+          </div>
+          <div class="frow2">
+            <div class="fgroup">
+              <div class="flabel">Senha *</div>
+              <input class="finput" type="password" placeholder="Mín. 8 chars, maiúscula, número e caractere especial" id="lj-senha"/>
+            </div>
+            <div class="fgroup">
+              <div class="flabel">Confirmar senha *</div>
+              <input class="finput" type="password" placeholder="Repita a senha" id="lj-senha2"/>
+            </div>
+          </div>
+          <div class="fcheck">
+            <input type="checkbox" id="lj-termos"/>
+            <span>Aceito os <a href="#">termos de uso</a> e a <a href="#">política de privacidade</a> do EconomizaPinhal.</span>
+          </div>
+          <button class="btn-submit" onclick="cadastrarLoja()">Cadastrar minha loja grátis →</button>
+        </div>
+
+        <div class="success-box" id="loja-success">
+          <div class="suc-icon">🎉</div>
+          <div class="suc-title">Loja cadastrada!</div>
+          <div class="suc-desc">
+            Bem-vindo ao EconomizaPinhal!<br/>
+            Sua loja já está visível para os compradores da cidade.<br/><br/>
+            Você receberá um e-mail com os próximos passos para cadastrar seus produtos e preços.
+          </div>
+          <br/>
+          <button class="btn-prim" onclick="showPage('home')" style="margin-top:8px">Ver o site →</button>
+        </div>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="cad-login" class="cad-body" style="display:none">
+        <div class="fgroup">
+          <div class="flabel">E-mail</div>
+          <input class="finput" type="email" placeholder="seu@email.com"/>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Senha</div>
+          <input class="finput" type="password" placeholder="Sua senha"/>
+        </div>
+        <div style="text-align:right;margin-bottom:20px">
+          <a style="font-size:12px;color:var(--red);cursor:pointer">Esqueci minha senha</a>
+        </div>
+        <button class="btn-submit">Entrar na minha conta →</button>
+        <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--txt3)">
+          Não tem conta? <a style="color:var(--red);cursor:pointer" onclick="switchCad('usuario')">Cadastre-se grátis</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider"/>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Economiza<span>Pinhal</span></div>
+        <div class="footer-slogan">"Economizar ficou inteligente em Pinhal."</div>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col-title">Para compradores</div>
+        <a onclick="showPage('busca')">Buscar preços</a>
+        <a onclick="showPage('lista')">Lista de compras</a>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col-title">Para vendedores</div>
+        <a onclick="showPage('cadastro')">Cadastrar loja grátis</a>
+        <a onclick="showPage('cadastro')">Entrar no painel</a>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col-title">Contato</div>
+        <a>contato@economizapinhal.com.br</a>
+        <a>Pinhal, SP</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 EconomizaPinhal · Pinhal, SP · Usuário: <span id="user-name">Carregando...</span></div>
+      <div style="display:flex;gap:16px">
+        <span class="footer-copy" style="cursor:pointer">Privacidade</span>
+        <span class="footer-copy" style="cursor:pointer">Termos</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const PRODS={
+  'Arroz 5kg':[{m:'🏪 Mercadão Pinhal',t:'5 min',p:'R$18,90',v:18.90,c:'97%',w:true},{m:'🏬 Sup. Vitalino',t:'12 min',p:'R$21,50',v:21.50,c:'88%'},{m:'🛒 Atacadão Bairro',t:'30 min',p:'R$22,90',v:22.90,c:'81%'},{m:'🏪 Merc. São José',t:'1h',p:'R$23,50',v:23.50,c:'75%'}],
+  'Coca-Cola 2L':[{m:'🛒 Atacadão Bairro',t:'8 min',p:'R$7,49',v:7.49,c:'96%',w:true},{m:'🏪 Mercadão Pinhal',t:'20 min',p:'R$8,29',v:8.29,c:'90%'},{m:'🏬 Padaria do Centro',t:'45 min',p:'R$9,00',v:9.00,c:'78%'}],
+  'Leite 1L':[{m:'🏬 Sup. Vitalino',t:'15 min',p:'R$4,99',v:4.99,c:'94%',w:true},{m:'🏪 Mercadão Pinhal',t:'25 min',p:'R$5,49',v:5.49,c:'87%'},{m:'🏪 Merc. São José',t:'1h',p:'R$5,79',v:5.79,c:'80%'}],
+  'Frango 1kg':[{m:'🥩 Açougue do Seu Zé',t:'10 min',p:'R$11,90',v:11.90,c:'95%',w:true},{m:'🏪 Mercadão Pinhal',t:'1h',p:'R$13,50',v:13.50,c:'85%'},{m:'🏬 Sup. Vitalino',t:'2h',p:'R$14,90',v:14.90,c:'79%'}],
+  'Café 500g':[{m:'🏪 Mercadão Pinhal',t:'18 min',p:'R$14,90',v:14.90,c:'93%',w:true},{m:'🏪 Merc. São José',t:'40 min',p:'R$16,50',v:16.50,c:'86%'},{m:'🛒 Atacadão Bairro',t:'1h',p:'R$17,20',v:17.20,c:'80%'}],
+  'Feijão 1kg':[{m:'🛒 Atacadão Bairro',t:'7 min',p:'R$8,90',v:8.90,c:'91%',w:true},{m:'🏪 Mercadão Pinhal',t:'22 min',p:'R$9,49',v:9.49,c:'87%'},{m:'🏬 Sup. Vitalino',t:'50 min',p:'R$10,20',v:10.20,c:'82%'}],
+};
+const LIST_PRICES={'arroz':18.90,'leite':4.99,'café':14.90,'cafe':14.90,'frango':11.90,'feijão':8.90,'feijao':8.90,'óleo':6.49,'oleo':6.49,'açúcar':4.29,'acucar':4.29,'macarrão':3.49,'macarrao':3.49,'pão':5.90,'pao':5.90,'manteiga':9.90,'queijo':22.50,'presunto':14.90,'sabão':7.90,'sabao':7.90,'detergente':2.99,'coca':7.49,'refrigerante':7.49};
+const LIST_MKTS={'arroz':'Mercadão Pinhal','leite':'Sup. Vitalino','café':'Mercadão Pinhal','cafe':'Mercadão Pinhal','frango':'Açougue do Seu Zé','feijão':'Atacadão Bairro','feijao':'Atacadão Bairro','óleo':'Atacadão Bairro','oleo':'Atacadão Bairro','açúcar':'Mercadão Pinhal','acucar':'Mercadão Pinhal','macarrão':'Sup. Vitalino','macarrao':'Sup. Vitalino','pão':'Padaria do Centro','pao':'Padaria do Centro','manteiga':'Mercadão Pinhal','queijo':'Sup. Vitalino','presunto':'Atacadão Bairro','sabão':'Atacadão Bairro','sabao':'Atacadão Bairro','detergente':'Atacadão Bairro','coca':'Atacadão Bairro','refrigerante':'Atacadão Bairro'};
+let listItems=[],listId=0;
+
+function showPage(p){
+  ['home','busca','lista','cadastro'].forEach(x=>document.getElementById('pg-'+x).style.display='none');
+  document.getElementById('pg-'+p).style.display='block';
+  window.scrollTo(0,0);
+  if(p==='busca')doSearch();
+}
+
+function doSearch(){
+  const q=document.getElementById('search-input').value.trim().toLowerCase();
+  if(!q){document.getElementById('results').innerHTML='<p style="color:#aaa;grid-column:1/-1;text-align:center">Digite um produto para buscar</p>';return;}
+  const key=Object.keys(PRODS).find(k=>k.toLowerCase().includes(q.split(' ')[0]))||null;
+  if(!key){document.getElementById('results').innerHTML='<p style="color:#aaa;grid-column:1/-1;text-align:center">Produto não encontrado. Tente: Arroz, Coca-Cola, Leite, Frango, Café ou Feijão</p>';return;}
+  const data=PRODS[key];
+  document.getElementById('results').innerHTML=data.map(d=>`
+    <div class="rcard${d.w?' win':''}">
+      ${d.w?'<div class="rb">':''}
+      <div class="rm">${d.m}</div>
+      <div class="rt">Atualizado ${d.t} atrás</div>
+      <div class="rp">${d.p}</div>
+      <div class="rc" style="color:${d.w?'#22c55e':'#555'}">✓ ${d.c} confiança</div>
+      ${d.w?'</div>':''}
+    </div>`).join('');
+}
+
+function stag(el,v){
+  document.getElementById('search-input').value=v;
+  document.querySelectorAll('.tag').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');doSearch();
+}
+
+function addItem(){
+  const val=document.getElementById('list-input').value.trim();
+  if(!val)return;
+  const key=val.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const matchKey=Object.keys(LIST_PRICES).find(k=>{
+    const nk=k.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    return key.includes(nk)||nk.includes(key.substring(0,4));
+  })||null;
+  const price=matchKey?LIST_PRICES[matchKey]:parseFloat((Math.random()*15+4).toFixed(2));
+  const mkt=matchKey?LIST_MKTS[matchKey]:'Mercadão Pinhal';
+  const id=++listId;
+  listItems.push({id,name:val,price,mkt});
+  document.getElementById('list-input').value='';
+  renderList();
+}
+
+function removeItem(id){listItems=listItems.filter(i=>i.id!==id);renderList();}
+
+function renderList(){
+  const c=document.getElementById('list-items');
+  const sb=document.getElementById('savings-box');
+  if(!listItems.length){c.innerHTML='';sb.style.display='none';return;}
+  c.innerHTML=listItems.map(i=>`
+    <div class="list-item">
+      <div><div class="li-name">${i.name}</div><div class="li-mkt">${i.mkt}</div></div>
+      <div style="display:flex;align-items:center">
+        <div class="li-price">R$${i.price.toFixed(2)}</div>
+        <button class="li-del" onclick="removeItem(${i.id})">✕</button>
+      </div>
+    </div>`).join('');
+  const total=listItems.reduce((s,i)=>s+i.price,0);
+  const saved=(total*0.15).toFixed(2);
+  const mkts=[...new Set(listItems.map(i=>i.mkt))].slice(0,2).join(' + ');
+  document.getElementById('sav-amount').textContent='R$'+saved;
+  document.getElementById('sav-desc').textContent='comprando em '+mkts;
+  sb.style.display='flex';
+}
+
+function switchCad(t){
+  document.getElementById('tab-usuario').classList.toggle('on',t==='usuario');
+  document.getElementById('tab-loja').classList.toggle('on',t==='loja');
+  document.getElementById('tab-login').classList.toggle('on',t==='login');
+  document.getElementById('cad-usuario').style.display=t==='usuario'?'block':'none';
+  document.getElementById('cad-loja').style.display=t==='loja'?'block':'none';
+  document.getElementById('cad-login').style.display=t==='login'?'block':'none';
+}
+
+function validarEmail(email){
+  const re=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  return re.test(email);
+}
+
+function validarTelefone(tel){
+  if(!tel)return true;
+  const apenasNumeros=tel.replace(/\D/g,'');
+  return apenasNumeros.length===11;
+}
+
+function validarSenha(senha){
+  if(senha.length<8)return false;
+  if(!/[A-Z]/.test(senha))return false;
+  if(!/[0-9]/.test(senha))return false;
+  if(!/[!@#$%^&*]/.test(senha))return false;
+  return true;
+}
+
+function cadastrarUsuario(){
+  const nome=document.getElementById('us-nome').value.trim();
+  const email=document.getElementById('us-email').value.trim();
+  const tel=document.getElementById('us-tel').value.trim();
+  const senha=document.getElementById('us-senha').value;
+  const senha2=document.getElementById('us-senha2').value;
+  const termos=document.getElementById('us-termos').checked;
+  
+  if(!nome||nome.length<3){alert('Nome deve ter pelo menos 3 caracteres.');return;}
+  if(!email){alert('E-mail é obrigatório.');return;}
+  if(!validarEmail(email)){alert('E-mail inválido. Exemplo: seu@email.com');return;}
+  if(tel&&!validarTelefone(tel)){alert('Telefone inválido. Use 11 dígitos: (19) 99999-9999');return;}
+  if(!senha||!senha2){alert('Senha é obrigatória. Preencha ambos os campos.');return;}
+  if(!validarSenha(senha)){alert('Senha fraca! Deve ter:\n• Mínimo 8 caracteres\n• 1 letra MAIÚSCULA\n• 1 número\n• 1 caractere especial (!@#$%^&*)');return;}
+  if(senha!==senha2){alert('As senhas não conferem. Verifique e tente novamente.');return;}
+  if(!termos){alert('Aceite os termos de uso para continuar.');return;}
+  
+  document.getElementById('form-usuario').style.display='none';
+  document.getElementById('usuario-success').classList.add('show');
+  
+  setTimeout(()=>{
+    document.getElementById('us-nome').value='';
+    document.getElementById('us-email').value='';
+    document.getElementById('us-tel').value='';
+    document.getElementById('us-senha').value='';
+    document.getElementById('us-senha2').value='';
+    document.getElementById('us-termos').checked=false;
+    document.getElementById('form-usuario').style.display='block';
+    document.getElementById('usuario-success').classList.remove('show');
+    switchCad('usuario');
+    showPage('home');
+  },3000);
+}
+
+function cadastrarLoja(){
+  const nome=document.getElementById('lj-nome').value.trim();
+  const tipo=document.getElementById('lj-tipo').value.trim();
+  const end=document.getElementById('lj-end').value.trim();
+  const email=document.getElementById('lj-email').value.trim();
+  const tel=document.getElementById('lj-tel').value.trim();
+  const senha=document.getElementById('lj-senha').value;
+  const senha2=document.getElementById('lj-senha2').value;
+  const termos=document.getElementById('lj-termos').checked;
+  
+  if(!nome||nome.length<3){alert('Nome da loja deve ter pelo menos 3 caracteres.');return;}
+  if(!tipo){alert('Selecione um tipo de estabelecimento.');return;}
+  if(!end||end.length<10){alert('Endereço inválido. Digite o endereço completo.');return;}
+  if(!email){alert('E-mail é obrigatório.');return;}
+  if(!validarEmail(email)){alert('E-mail inválido. Exemplo: seu@email.com');return;}
+  if(tel&&!validarTelefone(tel)){alert('WhatsApp inválido. Use 11 dígitos: (19) 99999-9999');return;}
+  if(!senha||!senha2){alert('Senha é obrigatória. Preencha ambos os campos.');return;}
+  if(!validarSenha(senha)){alert('Senha fraca! Deve ter:\n• Mínimo 8 caracteres\n• 1 letra MAIÚSCULA\n• 1 número\n• 1 caractere especial (!@#$%^&*)');return;}
+  if(senha!==senha2){alert('As senhas não conferem. Verifique e tente novamente.');return;}
+  if(!termos){alert('Aceite os termos de uso para continuar.');return;}
+  
+  document.getElementById('form-loja').style.display='none';
+  document.getElementById('loja-success').classList.add('show');
+  
+  setTimeout(()=>{
+    document.getElementById('lj-nome').value='';
+    document.getElementById('lj-tipo').value='';
+    document.getElementById('lj-end').value='';
+    document.getElementById('lj-email').value='';
+    document.getElementById('lj-tel').value='';
+    document.getElementById('lj-senha').value='';
+    document.getElementById('lj-senha2').value='';
+    document.getElementById('lj-termos').checked=false;
+    document.getElementById('form-loja').style.display='block';
+    document.getElementById('loja-success').classList.remove('show');
+    switchCad('loja');
+  },3000);
+}
+
+function animC(id,end,ms){
+  const el=document.getElementById(id);if(!el)return;
+  let cur=0;const step=end/60;
+  const t=setInterval(()=>{cur=Math.min(cur+step,end);el.textContent=Math.round(cur);if(cur>=end)clearInterval(t);},ms/60);
+}
+
+setTimeout(()=>{animC('c1',1240,1400);animC('c2',38,1000);animC('c3',4820,1600);animC('c4',613,1200);},400);
+let bc=843;setInterval(()=>{bc+=Math.floor(Math.random()*3);document.getElementById('badge-count').textContent=bc;},4000);
+exibirNomeUsuario();
+doSearch();
+</script>
+</body>
+</html>
+HTMLEOF
